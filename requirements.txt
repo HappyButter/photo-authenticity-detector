@@ -1,0 +1,3 @@
+tensorflow
+PyQt5
+opencv-python
