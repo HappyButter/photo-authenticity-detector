@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
 from intro_window import IntroWindow
-from LoadImage import LoadImage
+from load_image import LoadImage
 
 
 class UiStartWindow(object):
