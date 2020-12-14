@@ -7,9 +7,9 @@ import numpy as np
 
 class UiIntroWindow(object):
     def setupUi(self, intro_window):
-        self.intr_window = intro_window
-        intro_window.setObjectName("intro_window")
-        intro_window.resize(629, 619)
+        self.intro_window = intro_window
+        self.intro_window.setObjectName("intro_window")
+        self.intro_window.resize(629, 619)
         self.centralwidget = QtWidgets.QWidget(intro_window)
         self.centralwidget.setObjectName("centralwidget")
         self.intro_image_label = QtWidgets.QLabel(self.centralwidget)
@@ -26,14 +26,14 @@ class UiIntroWindow(object):
         self.go_further.setText("")
         self.go_further.setFlat(True)
         self.go_further.setObjectName("go_further")
-        intro_window.setCentralWidget(self.centralwidget)
+        self.intro_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(intro_window)
         QtCore.QMetaObject.connectSlotsByName(intro_window)
 
     def retranslateUi(self, intro_window):
         _translate = QtCore.QCoreApplication.translate
-        intro_window.setWindowTitle(_translate("intro_window", "MainWindow"))
+        self.intro_window.setWindowTitle(_translate("intro_window", "MainWindow"))
         self.info_text_label.setText(_translate("intro_window", "Click to continue"))
         self.info_text_label.setFont(QFont('Arial', 1))
 
@@ -46,7 +46,7 @@ class IntroWindow(UiIntroWindow):
         self.transform_text()
 
     def close_window(self):
-        self.intr_window.close()
+        self.intro_window.close()
         self.start_window.show()
 
     def transform_text(self):
@@ -60,3 +60,7 @@ class IntroWindow(UiIntroWindow):
         self.anim.setEndValue(5)
         self.anim.setLoopCount(-1)
         self.anim.start()
+
+    def start(self):
+        self.intro_window.show()
+

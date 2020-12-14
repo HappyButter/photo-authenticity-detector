@@ -6,10 +6,10 @@ from load_image import LoadImage
 class UiStartWindow(object):
     def setupUi(self, start_window):
         self.start_window = start_window
-        start_window.setObjectName("start_window")
-        start_window.resize(644, 677)
-        start_window.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        start_window.setWindowFilePath("")
+        self.start_window.setObjectName("start_window")
+        self.start_window.resize(644, 677)
+        self.start_window.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        self.start_windowsetWindowFilePath("")
         self.centralwidget = QtWidgets.QWidget(start_window)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
@@ -33,14 +33,14 @@ class UiStartWindow(object):
         self.open_credits_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.open_credits_button.setObjectName("open_credits_button")
         self.main_menu_layout.addWidget(self.open_credits_button)
-        start_window.setCentralWidget(self.centralwidget)
+        self.start_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(start_window)
         QtCore.QMetaObject.connectSlotsByName(start_window)
 
     def retranslateUi(self, start_window):
         _translate = QtCore.QCoreApplication.translate
-        start_window.setWindowTitle(_translate("start_window", "MainWindow"))
+        self.start_window.setWindowTitle(_translate("start_window", "MainWindow"))
         self.image_load_button.setText(_translate("start_window", "CHECK IMAGE"))
         self.open_instruction_button.setText(_translate("start_window", "INSTRUCTIONS"))
         self.open_description_button.setText(_translate("start_window", "PROJECT DESCRIPTION"))
@@ -52,9 +52,6 @@ class StartWindow(UiStartWindow):
         self.setupUi(start_window)
         window = QtWidgets.QMainWindow()
         self.intro_window = IntroWindow(window, start_window)
-        self.start_window.hide()
-        window.show()
-
         self.image_load_button.clicked.connect(self.load_user_image)
 
     def load_user_image(self):
@@ -66,3 +63,6 @@ class StartWindow(UiStartWindow):
         self.load_user_image = LoadImage(imagePath)
         self.load_user_image.show()
 
+    def start(self):
+        self.start_window.hide()
+        self.intro_window.start()
