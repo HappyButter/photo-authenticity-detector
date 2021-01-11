@@ -1,8 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QImage
+import cv2
+import numpy as np
 
 
 class Ui_image_editor_window(object):
     def setupUi(self, image_editor_window):
+        self.image_editor_window = image_editor_window
         image_editor_window.setObjectName("image_editor_window")
         image_editor_window.resize(1113, 605)
         self.centralwidget = QtWidgets.QWidget(image_editor_window)
@@ -51,10 +55,18 @@ class Ui_image_editor_window(object):
         self.contrast_slider = QtWidgets.QSlider(self.layoutWidget)
         self.contrast_slider.setOrientation(QtCore.Qt.Horizontal)
         self.contrast_slider.setObjectName("contrast_slider")
+        self.contrast_slider.setMaximum(300)
+        self.contrast_slider.setMinimum(100)
+        self.contrast_slider.setSingleStep(10)
+        self.contrast_slider.setValue(100)
         self.gridLayout.addWidget(self.contrast_slider, 1, 0, 1, 1)
         self.gamma_slider = QtWidgets.QSlider(self.layoutWidget)
         self.gamma_slider.setOrientation(QtCore.Qt.Horizontal)
         self.gamma_slider.setObjectName("gamma_slider")
+        self.gamma_slider.setMaximum(200)
+        self.gamma_slider.setMinimum(1)
+        self.gamma_slider.setSingleStep(10)
+        self.gamma_slider.setValue(100)
         self.gridLayout.addWidget(self.gamma_slider, 1, 1, 1, 1)
         self.gaussian_label = QtWidgets.QLabel(self.layoutWidget)
         self.gaussian_label.setObjectName("gaussian_label")
@@ -62,6 +74,10 @@ class Ui_image_editor_window(object):
         self.gaussian_slider = QtWidgets.QSlider(self.layoutWidget)
         self.gaussian_slider.setOrientation(QtCore.Qt.Horizontal)
         self.gaussian_slider.setObjectName("gaussian_slider")
+        self.gaussian_slider.setMaximum(9)
+        self.gaussian_slider.setMinimum(1)
+        self.gaussian_slider.setSingleStep(2)
+        self.gaussian_slider.setValue(1)
         self.gridLayout.addWidget(self.gaussian_slider, 3, 0, 1, 1)
         self.gamma_label = QtWidgets.QLabel(self.layoutWidget)
         self.gamma_label.setObjectName("gamma_label")
@@ -75,7 +91,7 @@ class Ui_image_editor_window(object):
         _translate = QtCore.QCoreApplication.translate
         image_editor_window.setWindowTitle(_translate("image_editor_window", "MainWindow"))
         self.checker_button.setText(_translate("image_editor_window", "Check"))
-        self.RGB_check_box.setTitle(_translate("image_editor_window", "RGB"))
+        self.RGB_check_box.setTitle(_translate("image_editor_window", "filter RGB"))
         self.r_canal_check_box.setText(_translate("image_editor_window", "R"))
         self.green_color__check_box_2.setText(_translate("image_editor_window", "G"))
         self.blue_color_check_box.setText(_translate("image_editor_window", "B"))
@@ -85,11 +101,80 @@ class Ui_image_editor_window(object):
         self.gamma_label.setText(_translate("image_editor_window", "gamma"))
 
 
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    image_editor_window = QtWidgets.QMainWindow()
-    ui = Ui_image_editor_window()
-    ui.setupUi(image_editor_window)
-    image_editor_window.show()
-    sys.exit(app.exec_())
+class ImageEditorWindow(Ui_image_editor_window):
+    def __init__(self, window, start_window, user_image):
+        self.start_window = start_window
+        self.setupUi(window)
+        self.original_image = user_image
+        self.user_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381)
+
+        height, width, channel = self.user_image.shape
+        bytesPerLine = 3 * width
+        qImg = QImage(self.user_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        self.original_image_label.setPixmap(QtGui.QPixmap(qImg))
+
+        self.checker_button.clicked.connect(self.close_window)
+        self.convert_to_gray_check_box.stateChanged.connect(self.updateManipulatedImage)
+        self.r_canal_check_box.stateChanged.connect(self.updateManipulatedImage)
+        self.green_color__check_box_2.stateChanged.connect(self.updateManipulatedImage)
+        self.blue_color_check_box.stateChanged.connect(self.updateManipulatedImage)
+        self.contrast_slider.valueChanged.connect(self.updateManipulatedImage)
+        self.gamma_slider.valueChanged.connect(self.updateManipulatedImage)
+        self.gaussian_slider.valueChanged.connect(self.updateManipulatedImage)
+
+    def updateManipulatedImage(self):
+        manipulated_image = self.original_image.resizeWithAspectRatio(self.original_image.modified_image, width=381)
+        if self.r_canal_check_box.isChecked():
+            self.filterRed(manipulated_image)
+        if self.green_color__check_box_2.isChecked():
+            self.filterGreen(manipulated_image)
+        if self.blue_color_check_box.isChecked():
+            self.filterBlue(manipulated_image)
+        manipulated_image = self.contrastControl(manipulated_image)
+        manipulated_image = self.gammaControl(manipulated_image)
+        manipulated_image = self.gaussianBlurControl(manipulated_image)
+
+        if self.convert_to_gray_check_box.isChecked():
+            manipulated_image = self.toGrayScale(manipulated_image)
+            height, width = manipulated_image.shape
+            qImg = QImage(manipulated_image.data, width, height, width, QImage.Format_Grayscale8)
+            self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
+        else:
+            height, width, channel = manipulated_image.shape
+            bytesPerLine = 3 * width
+            qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+            self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
+
+    def toGrayScale(self, manipulated_image):
+        return cv2.cvtColor(manipulated_image, cv2.COLOR_BGR2GRAY)
+
+    def filterRed(self, manipulated_image):
+        manipulated_image[:, :, 2] = 0
+
+    def filterGreen(self, manipulated_image):
+        manipulated_image[:, :, 1] = 0
+
+    def filterBlue(self, manipulated_image):
+        manipulated_image[:, :, 0] = 0
+
+    def contrastControl(self, manipulated_image):
+        alpha = self.contrast_slider.value() / 100.
+        new_image = cv2.convertScaleAbs(manipulated_image, alpha=alpha)
+        return new_image
+
+    def gammaControl(self, manipulated_image):
+        gamma = self.gamma_slider.value() / 100.
+        lookUpTable = np.empty((1, 256), np.uint8)
+        for i in range(256):
+            lookUpTable[0, i] = np.clip(pow(i / 255.0, gamma) * 255.0, 0, 255)
+        return cv2.LUT(manipulated_image, lookUpTable)
+
+    def gaussianBlurControl(self, manipulated_image):
+        blur = self.gaussian_slider.value()
+        if blur == 1 or blur % 2 == 0:
+            return manipulated_image
+        return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
+
+    def close_window(self):
+        self.image_editor_window.close()
+        self.start_window.show()

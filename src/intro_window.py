@@ -15,7 +15,7 @@ class UiIntroWindow(object):
         self.intro_image_label = QtWidgets.QLabel(self.centralwidget)
         self.intro_image_label.setGeometry(QtCore.QRect(0, 0, 629, 619))
         self.intro_image_label.setText("")
-        self.intro_image_label.setPixmap(QtGui.QPixmap("../images/logo.png"))
+        self.intro_image_label.setPixmap(QtGui.QPixmap("images/logo.png"))
         self.intro_image_label.setObjectName("intro_image_label")
         self.info_text_label = CustomLabel(self.centralwidget)
         self.info_text_label.setGeometry(QtCore.QRect(160, 520, 271, 41))
@@ -42,8 +42,8 @@ class IntroWindow(UiIntroWindow):
     def __init__(self, window, start_window):
         self.start_window = start_window
         self.setupUi(window)
-        self.go_further.clicked.connect(self.close_window)
         self.transform_text()
+        self.go_further.clicked.connect(self.close_window)
 
     def close_window(self):
         self.intr_window.close()
