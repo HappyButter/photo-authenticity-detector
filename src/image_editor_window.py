@@ -74,9 +74,8 @@ class Ui_image_editor_window(object):
         self.gaussian_slider = QtWidgets.QSlider(self.layoutWidget)
         self.gaussian_slider.setOrientation(QtCore.Qt.Horizontal)
         self.gaussian_slider.setObjectName("gaussian_slider")
-        self.gaussian_slider.setMaximum(9)
-        self.gaussian_slider.setMinimum(1)
-        self.gaussian_slider.setSingleStep(2)
+        self.gaussian_slider.setMaximum(10)
+        self.gaussian_slider.setMinimum(0)
         self.gaussian_slider.setValue(1)
         self.gridLayout.addWidget(self.gaussian_slider, 3, 0, 1, 1)
         self.gamma_label = QtWidgets.QLabel(self.layoutWidget)
@@ -170,8 +169,8 @@ class ImageEditorWindow(Ui_image_editor_window):
         return cv2.LUT(manipulated_image, lookUpTable)
 
     def gaussianBlurControl(self, manipulated_image):
-        blur = self.gaussian_slider.value()
-        if blur == 1 or blur % 2 == 0:
+        blur = self.gaussian_slider.value() * 2 + 1
+        if blur == 1:
             return manipulated_image
         return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
 
