@@ -9,7 +9,7 @@ class UiStartWindow(object):
         self.start_window.setObjectName("start_window")
         self.start_window.resize(644, 677)
         self.start_window.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
-        self.start_windowsetWindowFilePath("")
+        self.start_window.setWindowFilePath("")
         self.centralwidget = QtWidgets.QWidget(start_window)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
