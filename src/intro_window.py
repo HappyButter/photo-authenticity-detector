@@ -15,7 +15,7 @@ class UiIntroWindow(object):
         self.intro_image_label = QtWidgets.QLabel(self.centralwidget)
         self.intro_image_label.setGeometry(QtCore.QRect(0, 0, 629, 619))
         self.intro_image_label.setText("")
-        self.intro_image_label.setPixmap(QtGui.QPixmap("images/logo.png"))
+        self.intro_image_label.setPixmap(QtGui.QPixmap("../images/logo.png"))
         self.intro_image_label.setObjectName("intro_image_label")
         self.info_text_label = CustomLabel(self.centralwidget)
         self.info_text_label.setGeometry(QtCore.QRect(160, 520, 271, 41))

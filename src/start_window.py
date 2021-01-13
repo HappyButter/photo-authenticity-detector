@@ -1,4 +1,6 @@
+import webbrowser
 from PyQt5 import QtCore, QtWidgets
+from pathlib import Path
 from intro_window import IntroWindow
 from load_image import LoadImage
 from image_editor_window import ImageEditorWindow
@@ -50,7 +52,6 @@ class UiStartWindow(object):
 
 class StartWindow(UiStartWindow):
     def __init__(self, start_window):
-
         self.setupUi(start_window)
         self.window = QtWidgets.QMainWindow()
         self.intro_window = IntroWindow(self.window, start_window)
@@ -61,6 +62,13 @@ class StartWindow(UiStartWindow):
 
         self.image_load_button.clicked.connect(self.load_user_image)
 
+        self.open_description_button.clicked.connect(self.show_project_description)
+
+
+    def show_project_description(self):
+        current_dir = Path(__file__).parent
+        webbrowser.open_new(current_dir / "../project_description\AO_dokumentacja_projektu.pdf")
+
 
     def close_window(self):
         self.start_window.close()
@@ -70,16 +78,11 @@ class StartWindow(UiStartWindow):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         imagePath, _ = QtWidgets.QFileDialog.getOpenFileName(self.start_window, "QFileDialog.getOpenFileName()", "",
-                                                  "Image files (*.jpg *.png)", options=options)
+                                                             "Image files (*.jpg *.png)", options=options)
         user_image = LoadImage(imagePath)
         if user_image.original_image is not None:
             print("ok")
             self.start_window.hide()
             self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image)
             self.window.show()
-
-
-        # if self.user_image.original_image is not None:
-        #     print("ok")
-        # self.load_user_image.show()
 
