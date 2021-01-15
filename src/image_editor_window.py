@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
 import cv2
 import numpy as np
+from tensorflow.keras import models
 
 
 class Ui_image_editor_window(object):
@@ -105,14 +106,21 @@ class ImageEditorWindow(Ui_image_editor_window):
         self.start_window = start_window
         self.setupUi(window)
         self.original_image = user_image
-        self.user_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381)
+        self.user_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381, height=321)
 
         height, width, channel = self.user_image.shape
         bytesPerLine = 3 * width
         qImg = QImage(self.user_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
         self.original_image_label.setPixmap(QtGui.QPixmap(qImg))
 
-        self.checker_button.clicked.connect(self.close_window)
+        manipulated_image = self.original_image.resizeWithAspectRatio(self.original_image.modified_image, width=381)
+        height, width, channel = manipulated_image.shape
+        bytesPerLine = 3 * width
+        qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
+
+
+        self.checker_button.clicked.connect(self.calculate_fake_rate)
         self.convert_to_gray_check_box.stateChanged.connect(self.updateManipulatedImage)
         self.r_canal_check_box.stateChanged.connect(self.updateManipulatedImage)
         self.green_color__check_box_2.stateChanged.connect(self.updateManipulatedImage)
@@ -144,6 +152,35 @@ class ImageEditorWindow(Ui_image_editor_window):
             qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
             self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
 
+    def manipulate_image(self):
+        manipulated_image = self.original_image.modified_image
+        if self.r_canal_check_box.isChecked():
+            self.filterRed(manipulated_image)
+        if self.green_color__check_box_2.isChecked():
+            self.filterGreen(manipulated_image)
+        if self.blue_color_check_box.isChecked():
+            self.filterBlue(manipulated_image)
+        manipulated_image = self.contrastControl(manipulated_image)
+        manipulated_image = self.gammaControl(manipulated_image)
+        manipulated_image = self.gaussianBlurControl(manipulated_image)
+
+        if self.convert_to_gray_check_box.isChecked():
+            manipulated_image = self.toGrayScale(manipulated_image)
+
+        return manipulated_image
+
+    def calculate_fake_rate(self):
+        img = self.manipulate_image()
+        img = img.astype('float64')
+        img = img/255.0
+        height, width, channel = img.shape
+        img = img.reshape(-1, width, height, 3)
+        print("model loaded")
+        trained_model = models.load_model("../model/model_trained_animals_batch_16_imagenet.hdf5")
+
+
+        print(trained_model.predict(img))
+
     def toGrayScale(self, manipulated_image):
         return cv2.cvtColor(manipulated_image, cv2.COLOR_BGR2GRAY)
 
@@ -173,6 +210,7 @@ class ImageEditorWindow(Ui_image_editor_window):
         if blur == 1:
             return manipulated_image
         return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
+
 
     def close_window(self):
         self.image_editor_window.close()

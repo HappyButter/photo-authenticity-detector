@@ -38,12 +38,3 @@ class Ui_result_window(object):
         self.result_info_label.setText(_translate("result_window", "Tekst o procentach"))
         self.busted_clear_label.setText(_translate("result_window", "No tutaj busted/clear jesli wyjdzie nam zaznaczanie gdzie jest fake"))
 
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    result_window = QtWidgets.QMainWindow()
-    ui = Ui_result_window()
-    ui.setupUi(result_window)
-    result_window.show()
-    sys.exit(app.exec_())
