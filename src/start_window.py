@@ -1,9 +1,11 @@
 import webbrowser
 from PyQt5 import QtCore, QtWidgets
 from pathlib import Path
+from PyQt5.QtCore import QThreadPool
 from intro_window import IntroWindow
 from load_image import LoadImage
 from image_editor_window import ImageEditorWindow
+from model import Model
 
 
 class UiStartWindow(object):
@@ -57,18 +59,19 @@ class StartWindow(UiStartWindow):
         self.intro_window = IntroWindow(self.window, start_window)
         self.start_window.hide()
         self.window.show()
-
+        self.threadpool = QThreadPool()
+        self.model = Model()
+        self.threadpool.start(self.model)
+        self.model.signals.finished.connect(self.intro_window.after_model_load)
         self.image_editor_window = None
 
         self.image_load_button.clicked.connect(self.load_user_image)
 
         self.open_description_button.clicked.connect(self.show_project_description)
 
-
     def show_project_description(self):
         current_dir = Path(__file__).parent
         webbrowser.open_new(current_dir / "../project_description\AO_dokumentacja_projektu.pdf")
-
 
     def close_window(self):
         self.start_window.close()
@@ -83,6 +86,5 @@ class StartWindow(UiStartWindow):
         if user_image.original_image is not None:
             print("ok")
             self.start_window.hide()
-            self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image)
+            self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image, self.model)
             self.window.show()
-

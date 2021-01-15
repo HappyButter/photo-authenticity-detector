@@ -2,7 +2,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
 import cv2
 import numpy as np
-from tensorflow.keras import models
 
 
 class Ui_image_editor_window(object):
@@ -102,7 +101,8 @@ class Ui_image_editor_window(object):
 
 
 class ImageEditorWindow(Ui_image_editor_window):
-    def __init__(self, window, start_window, user_image):
+    def __init__(self, window, start_window, user_image, model):
+        self.model = model
         self.start_window = start_window
         self.setupUi(window)
         self.original_image = user_image
@@ -175,11 +175,8 @@ class ImageEditorWindow(Ui_image_editor_window):
         img = img/255.0
         height, width, channel = img.shape
         img = img.reshape(-1, width, height, 3)
-        print("model loaded")
-        trained_model = models.load_model("../model/model_trained_animals_batch_16_imagenet.hdf5")
 
-
-        print(trained_model.predict(img))
+        print(self.model.predict(img))
 
     def toGrayScale(self, manipulated_image):
         return cv2.cvtColor(manipulated_image, cv2.COLOR_BGR2GRAY)
@@ -210,7 +207,6 @@ class ImageEditorWindow(Ui_image_editor_window):
         if blur == 1:
             return manipulated_image
         return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
-
 
     def close_window(self):
         self.image_editor_window.close()
