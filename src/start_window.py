@@ -1,6 +1,11 @@
+import webbrowser
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QThreadPool
+
 from intro_window import IntroWindow
 from load_image import LoadImage
+from image_editor_window import ImageEditorWindow
+from model import Model
 
 
 class UiStartWindow(object):
@@ -24,16 +29,10 @@ class UiStartWindow(object):
         self.image_load_button.setIconSize(QtCore.QSize(20, 19))
         self.image_load_button.setObjectName("image_load_button")
         self.main_menu_layout.addWidget(self.image_load_button)
-        self.open_instruction_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.open_instruction_button.setObjectName("open_instruction_button")
-        self.main_menu_layout.addWidget(self.open_instruction_button)
         self.open_description_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.open_description_button.setObjectName("open_description_button")
         self.main_menu_layout.addWidget(self.open_description_button)
-        self.open_credits_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.open_credits_button.setObjectName("open_credits_button")
-        self.main_menu_layout.addWidget(self.open_credits_button)
-        self.start_window.setCentralWidget(self.centralwidget)
+        start_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(start_window)
         QtCore.QMetaObject.connectSlotsByName(start_window)
@@ -42,27 +41,39 @@ class UiStartWindow(object):
         _translate = QtCore.QCoreApplication.translate
         self.start_window.setWindowTitle(_translate("start_window", "MainWindow"))
         self.image_load_button.setText(_translate("start_window", "CHECK IMAGE"))
-        self.open_instruction_button.setText(_translate("start_window", "INSTRUCTIONS"))
         self.open_description_button.setText(_translate("start_window", "PROJECT DESCRIPTION"))
-        self.open_credits_button.setText(_translate("start_window", "CREDITS"))
 
 
 class StartWindow(UiStartWindow):
     def __init__(self, start_window):
         self.setupUi(start_window)
-        window = QtWidgets.QMainWindow()
-        self.intro_window = IntroWindow(window, start_window)
+        self.window = QtWidgets.QMainWindow()
+        self.intro_window = IntroWindow(self.window, start_window)
+        self.hide_window()
+        self.threadpool = QThreadPool()
+        self.model = Model()
+        self.threadpool.start(self.model)
+        self.model.signals.finished.connect(self.intro_window.after_model_load)
+        self.image_editor_window = None
+
         self.image_load_button.clicked.connect(self.load_user_image)
+
+        self.open_description_button.clicked.connect(self.show_project_description)
+
+    def show_project_description(self):
+        webbrowser.open_new("../project_description/AO_dokumentacja_projektu.pdf")
+
+    def hide_window(self):
+        self.start_window.hide()
+        self.intro_window.intro_window.show()
 
     def load_user_image(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         imagePath, _ = QtWidgets.QFileDialog.getOpenFileName(self.start_window, "QFileDialog.getOpenFileName()", "",
-                                                  "Image files (*.jpg *.png)", options=options)
-
-        self.load_user_image = LoadImage(imagePath)
-        self.load_user_image.show()
-
-    def start(self):
-        self.start_window.hide()
-        self.intro_window.start()
+                                                             "Image files (*.jpg *.png)", options=options)
+        user_image = LoadImage(imagePath)
+        if user_image.original_image is not None:
+            self.start_window.hide()
+            self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image, self.model)
+            self.image_editor_window.show()

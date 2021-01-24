@@ -129,3 +129,7 @@ dmypy.json
 .pyre/
 
 /dataset/
+
+.idea
+venv2
+model

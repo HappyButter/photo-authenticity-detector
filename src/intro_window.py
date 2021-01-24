@@ -41,25 +41,31 @@ class UiIntroWindow(object):
 class IntroWindow(UiIntroWindow):
     def __init__(self, window, start_window):
         self.start_window = start_window
+        self.animation = None
         self.setupUi(window)
-        self.go_further.clicked.connect(self.close_window)
         self.transform_text()
+
+    def after_model_load(self):
+        _translate = QtCore.QCoreApplication.translate
+        self.info_text_label.setText(_translate("intro_window", "Click to continue"))
+        self.go_further.clicked.connect(self.close_window)
 
     def close_window(self):
         self.intro_window.close()
         self.start_window.show()
 
     def transform_text(self):
-        self.anim = QPropertyAnimation(self.info_text_label, b"font")
-        self.anim.setDuration(8000)
-        self.anim.setStartValue(5)
+
+        self.animation = QPropertyAnimation(self.info_text_label, b"font")
+        self.animation.setDuration(8000)
+        self.animation.setStartValue(5)
         time_frames = np.linspace(0, 1, num=20)
         font_sizes = [i for i in range(5, 15)] + [i for i in range(15, 5, -1)]
         for time_frame, font_size in zip(time_frames, font_sizes):
-            self.anim.setKeyValueAt(time_frame, font_size)
-        self.anim.setEndValue(5)
-        self.anim.setLoopCount(-1)
-        self.anim.start()
+            self.animation.setKeyValueAt(time_frame, font_size)
+        self.animation.setEndValue(5)
+        self.animation.setLoopCount(-1)
+        self.animation.start()
 
     def start(self):
         self.intro_window.show()

@@ -9,4 +9,3 @@ if __name__ == "__main__":
     start_window = StartWindow(window)
     start_window.start()
     sys.exit(app.exec_())
-
