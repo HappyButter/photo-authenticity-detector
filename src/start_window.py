@@ -49,7 +49,8 @@ class StartWindow(UiStartWindow):
         self.setupUi(start_window)
         self.window = QtWidgets.QMainWindow()
         self.intro_window = IntroWindow(self.window, start_window)
-        self.hide_window()
+        self.start_window.hide()
+        # self.hide_window()
         self.threadpool = QThreadPool()
         self.model = Model()
         self.threadpool.start(self.model)
@@ -65,7 +66,7 @@ class StartWindow(UiStartWindow):
         webbrowser.open_new(current_dir / "../project_description/AO_dokumentacja_projektu.pdf")
 
     def hide_window(self):
-        self.start_window.hide()
+
         self.intro_window.intro_window.show()
 
     def load_user_image(self):
@@ -80,4 +81,4 @@ class StartWindow(UiStartWindow):
             self.image_editor_window.show()
 
     def start(self):
-        self.intro_window.show()
+        self.intro_window.start()
