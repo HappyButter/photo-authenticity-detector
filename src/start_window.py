@@ -1,7 +1,7 @@
 import webbrowser
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThreadPool
-
+from path import Path
 from intro_window import IntroWindow
 from load_image import LoadImage
 from image_editor_window import ImageEditorWindow
@@ -34,10 +34,10 @@ class UiStartWindow(object):
         self.main_menu_layout.addWidget(self.open_description_button)
         start_window.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(start_window)
+        self.retranslateUi()
         QtCore.QMetaObject.connectSlotsByName(start_window)
 
-    def retranslateUi(self, start_window):
+    def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
         self.start_window.setWindowTitle(_translate("start_window", "MainWindow"))
         self.image_load_button.setText(_translate("start_window", "CHECK IMAGE"))
@@ -61,7 +61,8 @@ class StartWindow(UiStartWindow):
         self.open_description_button.clicked.connect(self.show_project_description)
 
     def show_project_description(self):
-        webbrowser.open_new("../project_description/AO_dokumentacja_projektu.pdf")
+        current_dir = Path(__file__).parent
+        webbrowser.open_new(current_dir / "../project_description/AO_dokumentacja_projektu.pdf")
 
     def hide_window(self):
         self.start_window.hide()
