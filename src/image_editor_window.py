@@ -109,7 +109,7 @@ class ImageEditorWindow(Ui_image_editor_window):
         self.setupUi(window)
         self.window = window
         self.user_image = user_image
-        original_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381, height=321)
+        original_image = user_image.resize_with_aspect_ratio(user_image.original_image, width=381, height=321)
 
         (h, w) = original_image.shape[:2]
 
@@ -120,7 +120,7 @@ class ImageEditorWindow(Ui_image_editor_window):
         qImg = QImage(original_image.data, w, h, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
         self.original_image_label.setPixmap(QtGui.QPixmap(qImg))
 
-        manipulated_image = self.user_image.resizeWithAspectRatio(self.user_image.modified_image, width=381, height=321)
+        manipulated_image = self.user_image.resize_with_aspect_ratio(self.user_image.modified_image, width=381, height=321)
         qImg = QImage(manipulated_image.data, w, h, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
         self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
 
@@ -137,7 +137,7 @@ class ImageEditorWindow(Ui_image_editor_window):
         self.image_editor_window.show()
 
     def updateManipulatedImage(self):
-        manipulated_image = self.user_image.resizeWithAspectRatio(self.user_image.modified_image, width=381, height=321)
+        manipulated_image = self.user_image.resize_with_aspect_ratio(self.user_image.modified_image, width=381, height=321)
         if self.r_canal_check_box.isChecked():
             self.filterRed(manipulated_image)
         if self.green_color__check_box_2.isChecked():
