@@ -77,3 +77,6 @@ class StartWindow(UiStartWindow):
             self.start_window.hide()
             self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image, self.model)
             self.image_editor_window.show()
+
+    def start(self):
+        self.intro_window.show()
