@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QImage
 import cv2
 import numpy as np
-
+from result_window import ResultWindow
 
 class Ui_image_editor_window(object):
     def setupUi(self, image_editor_window):
@@ -102,25 +102,28 @@ class Ui_image_editor_window(object):
 
 class ImageEditorWindow(Ui_image_editor_window):
     def __init__(self, window, start_window, user_image, model):
+        self.result_window = None
         self.model = model
         self.start_window = start_window
         self.setupUi(window)
-        self.original_image = user_image
-        self.user_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381, height=321)
+        self.window = window
+        self.user_image = user_image
+        original_image = user_image.resizeWithAspectRatio(user_image.original_image, width=381, height=321)
 
-        height, width, channel = self.user_image.shape
-        bytesPerLine = 3 * width
-        qImg = QImage(self.user_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        (h, w) = original_image.shape[:2]
+
+        self.original_image_label.setGeometry(QtCore.QRect(110, 30, w, h))
+        self.changed_imag_label.setGeometry(QtCore.QRect(670, 30, w, h))
+
+        bytesPerLine = 3 * w
+        qImg = QImage(original_image.data, w, h, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
         self.original_image_label.setPixmap(QtGui.QPixmap(qImg))
 
-        manipulated_image = self.original_image.resizeWithAspectRatio(self.original_image.modified_image, width=381)
-        height, width, channel = manipulated_image.shape
-        bytesPerLine = 3 * width
-        qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        manipulated_image = self.user_image.resizeWithAspectRatio(self.user_image.modified_image, width=381, height=321)
+        qImg = QImage(manipulated_image.data, w, h, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
         self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
 
-
-        self.checker_button.clicked.connect(self.calculate_fake_rate)
+        self.checker_button.clicked.connect(self.check_action)
         self.convert_to_gray_check_box.stateChanged.connect(self.updateManipulatedImage)
         self.r_canal_check_box.stateChanged.connect(self.updateManipulatedImage)
         self.green_color__check_box_2.stateChanged.connect(self.updateManipulatedImage)
@@ -129,8 +132,13 @@ class ImageEditorWindow(Ui_image_editor_window):
         self.gamma_slider.valueChanged.connect(self.updateManipulatedImage)
         self.gaussian_slider.valueChanged.connect(self.updateManipulatedImage)
 
+
+    def show(self):
+        self.image_editor_window.show()
+
+
     def updateManipulatedImage(self):
-        manipulated_image = self.original_image.resizeWithAspectRatio(self.original_image.modified_image, width=381)
+        manipulated_image = self.user_image.resizeWithAspectRatio(self.user_image.modified_image, width=381, height=321)
         if self.r_canal_check_box.isChecked():
             self.filterRed(manipulated_image)
         if self.green_color__check_box_2.isChecked():
@@ -143,17 +151,14 @@ class ImageEditorWindow(Ui_image_editor_window):
 
         if self.convert_to_gray_check_box.isChecked():
             manipulated_image = self.toGrayScale(manipulated_image)
-            height, width = manipulated_image.shape
-            qImg = QImage(manipulated_image.data, width, height, width, QImage.Format_Grayscale8)
-            self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
-        else:
-            height, width, channel = manipulated_image.shape
-            bytesPerLine = 3 * width
-            qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
-            self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
+
+        height, width, channel = manipulated_image.shape
+        bytesPerLine = 3 * width
+        qImg = QImage(manipulated_image.data, width, height, bytesPerLine, QImage.Format_RGB888).rgbSwapped()
+        self.changed_imag_label.setPixmap(QtGui.QPixmap(qImg))
 
     def manipulate_image(self):
-        manipulated_image = self.original_image.modified_image
+        manipulated_image = self.user_image.modified_image.copy()
         if self.r_canal_check_box.isChecked():
             self.filterRed(manipulated_image)
         if self.green_color__check_box_2.isChecked():
@@ -172,14 +177,18 @@ class ImageEditorWindow(Ui_image_editor_window):
     def calculate_fake_rate(self):
         img = self.manipulate_image()
         img = img.astype('float64')
-        img = img/255.0
+        img = img / 255.0
         height, width, channel = img.shape
         img = img.reshape(-1, width, height, 3)
 
-        print(self.model.predict(img))
+        fake_rate = self.model.predict(img)
+        print(fake_rate)
+        return fake_rate
 
     def toGrayScale(self, manipulated_image):
-        return cv2.cvtColor(manipulated_image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(manipulated_image, cv2.COLOR_BGR2GRAY)
+        gray_three = cv2.merge([gray, gray, gray])
+        return gray_three
 
     def filterRed(self, manipulated_image):
         manipulated_image[:, :, 2] = 0
@@ -208,6 +217,10 @@ class ImageEditorWindow(Ui_image_editor_window):
             return manipulated_image
         return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
 
-    def close_window(self):
-        self.image_editor_window.close()
-        self.start_window.show()
+
+    def check_action(self):
+        fake_rate = self.calculate_fake_rate()
+        self.image_editor_window.hide()
+        self.result_window = ResultWindow(self.start_window, self.image_editor_window)
+        self.result_window.set_fake_rate(fake_rate[0])
+        self.result_window.show()

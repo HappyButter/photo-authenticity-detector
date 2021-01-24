@@ -84,7 +84,6 @@ class StartWindow(UiStartWindow):
                                                              "Image files (*.jpg *.png)", options=options)
         user_image = LoadImage(imagePath)
         if user_image.original_image is not None:
-            print("ok")
             self.start_window.hide()
             self.image_editor_window = ImageEditorWindow(self.window, self.start_window, user_image, self.model)
-            self.window.show()
+            self.image_editor_window.show()

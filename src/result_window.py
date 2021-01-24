@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_result_window(object):
     def setupUi(self, result_window):
+        self.result_window = result_window
         result_window.setObjectName("result_window")
         result_window.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(result_window)
@@ -36,5 +36,41 @@ class Ui_result_window(object):
         self.modify_image_button.setText(_translate("result_window", "Modify again"))
         self.to_menu_button.setText(_translate("result_window", "menu"))
         self.result_info_label.setText(_translate("result_window", "Tekst o procentach"))
-        self.busted_clear_label.setText(_translate("result_window", "No tutaj busted/clear jesli wyjdzie nam zaznaczanie gdzie jest fake"))
+        self.busted_clear_label.setText(
+            _translate("result_window", "No tutaj busted/clear jesli wyjdzie nam zaznaczanie gdzie jest fake"))
 
+
+class ResultWindow(Ui_result_window):
+    def __init__(self, start_window, image_editor_window):
+
+        self.start_window = start_window
+        self.image_editor_window = image_editor_window
+
+        self.window_2 = QtWidgets.QMainWindow()
+        self.setupUi(self.window_2)
+
+
+        self.modify_image_button.clicked.connect(self.modify_image_btn_action)
+        self.to_menu_button.clicked.connect(self.to_menu_btn_action)
+
+    def set_fake_rate(self, fake_rate):
+        _translate = QtCore.QCoreApplication.translate
+        info = None
+        if fake_rate[1] > fake_rate[0]:
+            info = "Zdjęcie jest prawdziwe w: {:2.5f}%".format(fake_rate[1] * 100)
+        else:
+            info = "Zdjęcie jest fałszywe w: {:2.5f}%".format(fake_rate[0] * 100)
+
+        print(info)
+        self.result_info_label.setText(_translate("result_window", info))
+
+    def modify_image_btn_action(self):
+        self.result_window.hide()
+        self.image_editor_window.show()
+
+    def to_menu_btn_action(self):
+        self.result_window.hide()
+        self.start_window.show()
+
+    def show(self):
+        self.result_window.show()

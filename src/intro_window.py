@@ -7,7 +7,7 @@ import numpy as np
 
 class UiIntroWindow(object):
     def setupUi(self, intro_window):
-        self.intr_window = intro_window
+        self.intro_window = intro_window
         intro_window.setObjectName("intro_window")
         intro_window.resize(629, 619)
         self.centralwidget = QtWidgets.QWidget(intro_window)
@@ -51,7 +51,7 @@ class IntroWindow(UiIntroWindow):
         self.go_further.clicked.connect(self.close_window)
 
     def close_window(self):
-        self.intr_window.close()
+        self.intro_window.close()
         self.start_window.show()
 
     def transform_text(self):
