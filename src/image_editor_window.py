@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 from result_window import ResultWindow
 
+
 class Ui_image_editor_window(object):
     def setupUi(self, image_editor_window):
         self.image_editor_window = image_editor_window
@@ -132,10 +133,8 @@ class ImageEditorWindow(Ui_image_editor_window):
         self.gamma_slider.valueChanged.connect(self.updateManipulatedImage)
         self.gaussian_slider.valueChanged.connect(self.updateManipulatedImage)
 
-
     def show(self):
         self.image_editor_window.show()
-
 
     def updateManipulatedImage(self):
         manipulated_image = self.user_image.resizeWithAspectRatio(self.user_image.modified_image, width=381, height=321)
@@ -215,7 +214,6 @@ class ImageEditorWindow(Ui_image_editor_window):
         if blur == 1:
             return manipulated_image
         return cv2.GaussianBlur(manipulated_image, (blur, blur), 0)
-
 
     def check_action(self):
         fake_rate = self.calculate_fake_rate()

@@ -1,4 +1,3 @@
-import numpy as np
 import cv2
 
 
@@ -8,9 +7,8 @@ class LoadImage:
         self.original_image = cv2.imread(image_path)
         self.modified_image = cv2.imread(image_path)
 
+    def resize_with_aspect_ratio(self, image, width, height, inter=cv2.INTER_AREA):
 
-    def resizeWithAspectRatio(self, image, width, height, inter=cv2.INTER_AREA):
-        dim = None
         (h, w) = image.shape[:2]
 
         if width is None or height is None:
@@ -19,9 +17,8 @@ class LoadImage:
         r = height / float(h)
         dim = (int(w * r), height)
 
-        if(dim[0] > width):
+        if dim[0] > width:
             r = width / float(w)
             dim = (width, int(h * r))
 
         return cv2.resize(image, dim, interpolation=inter)
-

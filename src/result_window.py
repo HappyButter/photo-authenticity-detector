@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_result_window(object):
     def setupUi(self, result_window):
         self.result_window = result_window
@@ -44,13 +45,11 @@ class ResultWindow(Ui_result_window):
         self.window_2 = QtWidgets.QMainWindow()
         self.setupUi(self.window_2)
 
-
         self.modify_image_button.clicked.connect(self.modify_image_btn_action)
         self.to_menu_button.clicked.connect(self.to_menu_btn_action)
 
     def set_fake_rate(self, fake_rate):
         _translate = QtCore.QCoreApplication.translate
-        info = None
         if fake_rate[1] > fake_rate[0]:
             self.result_image.setPixmap(QtGui.QPixmap("../images/OK.png"))
             info = "Your picture is real in: {:2.5f}% ".format(fake_rate[1] * 100)

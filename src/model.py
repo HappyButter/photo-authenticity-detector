@@ -1,6 +1,5 @@
 import sys
 import traceback
-
 from PyQt5.QtCore import QObject, QRunnable, pyqtSignal, pyqtSlot
 from tensorflow.keras import models
 
@@ -43,7 +42,6 @@ class Model(QRunnable):
         """
         Your code goes in this function
         """
-        print("Thread start")
 
         try:
             self.trained_model = models.load_model("../model/model_trained_animals_batch_16_imagenet.hdf5")

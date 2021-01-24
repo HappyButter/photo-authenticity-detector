@@ -1,7 +1,7 @@
 import webbrowser
 from PyQt5 import QtCore, QtWidgets
-from pathlib import Path
 from PyQt5.QtCore import QThreadPool
+
 from intro_window import IntroWindow
 from load_image import LoadImage
 from image_editor_window import ImageEditorWindow
@@ -62,8 +62,7 @@ class StartWindow(UiStartWindow):
         self.open_description_button.clicked.connect(self.show_project_description)
 
     def show_project_description(self):
-        current_dir = Path(__file__).parent
-        webbrowser.open_new(current_dir / "../project_description\AO_dokumentacja_projektu.pdf")
+        webbrowser.open_new("../project_description/AO_dokumentacja_projektu.pdf")
 
     def close_window(self):
         self.start_window.close()
