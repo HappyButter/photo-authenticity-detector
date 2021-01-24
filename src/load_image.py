@@ -25,12 +25,3 @@ class LoadImage:
 
         return cv2.resize(image, dim, interpolation=inter)
 
-    def show(self):
-        resize = self.resizeWithAspectRatio(self.original_image, width=381, height=321)
-        cv2.imshow("resize", resize)
-        cv2.waitKey(0)
-        cv2.imshow("image", self.original_image)
-        cv2.waitKey(0)
-
-    def refresh_read(self):
-        self.modified_image = cv2.imread(self.image_path)

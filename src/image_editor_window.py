@@ -182,7 +182,6 @@ class ImageEditorWindow(Ui_image_editor_window):
         img = img.reshape(-1, width, height, 3)
 
         fake_rate = self.model.predict(img)
-        print(fake_rate)
         return fake_rate
 
     def toGrayScale(self, manipulated_image):

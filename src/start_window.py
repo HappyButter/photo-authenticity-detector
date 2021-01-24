@@ -29,15 +29,9 @@ class UiStartWindow(object):
         self.image_load_button.setIconSize(QtCore.QSize(20, 19))
         self.image_load_button.setObjectName("image_load_button")
         self.main_menu_layout.addWidget(self.image_load_button)
-        self.open_instruction_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.open_instruction_button.setObjectName("open_instruction_button")
-        self.main_menu_layout.addWidget(self.open_instruction_button)
         self.open_description_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
         self.open_description_button.setObjectName("open_description_button")
         self.main_menu_layout.addWidget(self.open_description_button)
-        self.open_credits_button = QtWidgets.QPushButton(self.verticalLayoutWidget)
-        self.open_credits_button.setObjectName("open_credits_button")
-        self.main_menu_layout.addWidget(self.open_credits_button)
         start_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(start_window)
@@ -47,9 +41,7 @@ class UiStartWindow(object):
         _translate = QtCore.QCoreApplication.translate
         start_window.setWindowTitle(_translate("start_window", "MainWindow"))
         self.image_load_button.setText(_translate("start_window", "CHECK IMAGE"))
-        self.open_instruction_button.setText(_translate("start_window", "INSTRUCTIONS"))
         self.open_description_button.setText(_translate("start_window", "PROJECT DESCRIPTION"))
-        self.open_credits_button.setText(_translate("start_window", "CREDITS"))
 
 
 class StartWindow(UiStartWindow):

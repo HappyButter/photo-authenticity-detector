@@ -16,15 +16,12 @@ class Ui_result_window(object):
         self.result_image = QtWidgets.QLabel(self.centralwidget)
         self.result_image.setGeometry(QtCore.QRect(210, 110, 401, 341))
         self.result_image.setText("")
-        self.result_image.setPixmap(QtGui.QPixmap("../images/examples-examples.jpg"))
+
         self.result_image.setScaledContents(True)
         self.result_image.setObjectName("result_image")
         self.result_info_label = QtWidgets.QLabel(self.centralwidget)
         self.result_info_label.setGeometry(QtCore.QRect(320, 470, 221, 16))
         self.result_info_label.setObjectName("result_info_label")
-        self.busted_clear_label = QtWidgets.QLabel(self.centralwidget)
-        self.busted_clear_label.setGeometry(QtCore.QRect(170, 20, 481, 61))
-        self.busted_clear_label.setObjectName("busted_clear_label")
         result_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(result_window)
@@ -36,8 +33,6 @@ class Ui_result_window(object):
         self.modify_image_button.setText(_translate("result_window", "Modify again"))
         self.to_menu_button.setText(_translate("result_window", "menu"))
         self.result_info_label.setText(_translate("result_window", "Tekst o procentach"))
-        self.busted_clear_label.setText(
-            _translate("result_window", "No tutaj busted/clear jesli wyjdzie nam zaznaczanie gdzie jest fake"))
 
 
 class ResultWindow(Ui_result_window):
@@ -57,19 +52,20 @@ class ResultWindow(Ui_result_window):
         _translate = QtCore.QCoreApplication.translate
         info = None
         if fake_rate[1] > fake_rate[0]:
-            info = "Zdjęcie jest prawdziwe w: {:2.5f}%".format(fake_rate[1] * 100)
+            self.result_image.setPixmap(QtGui.QPixmap("../images/OK.png"))
+            info = "Your picture is real in: {:2.5f}% ".format(fake_rate[1] * 100)
         else:
-            info = "Zdjęcie jest fałszywe w: {:2.5f}%".format(fake_rate[0] * 100)
+            self.result_image.setPixmap(QtGui.QPixmap("../images/busted.png"))
+            info = "Your picture is fake in: {:2.5f}%".format(fake_rate[0] * 100)
 
-        print(info)
         self.result_info_label.setText(_translate("result_window", info))
 
     def modify_image_btn_action(self):
-        self.result_window.hide()
+        self.result_window.close()
         self.image_editor_window.show()
 
     def to_menu_btn_action(self):
-        self.result_window.hide()
+        self.result_window.close()
         self.start_window.show()
 
     def show(self):
