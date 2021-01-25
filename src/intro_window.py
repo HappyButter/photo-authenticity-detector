@@ -45,10 +45,13 @@ class IntroWindow(UiIntroWindow):
         self.setupUi(window)
         self.transform_text()
 
-    def after_model_load(self):
+    def after_model_load(self, model):
         _translate = QtCore.QCoreApplication.translate
-        self.info_text_label.setText(_translate("intro_window", "Click to continue"))
-        self.go_further.clicked.connect(self.close_window)
+        if model is not None:
+            self.info_text_label.setText(_translate("intro_window", "Click to continue"))
+            self.go_further.clicked.connect(self.close_window)
+        else:
+            self.info_text_label.setText(_translate("intro_window", "Failed to load model"))
 
     def close_window(self):
         self.intro_window.close()

@@ -46,8 +46,9 @@ class Model(QRunnable):
         try:
             self.trained_model = models.load_model("../model/model_trained_animals_batch_16_imagenet.hdf5")
         except:
-            traceback.print_exc()
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
+            # traceback.print_exc()
+            self.trained_model = None
+            # exctype, value = sys.exc_info()[:2]
+            # self.signals.error.emit((exctype, value, traceback.format_exc()))
         finally:
             self.signals.finished.emit()  # Done

@@ -54,7 +54,7 @@ class StartWindow(UiStartWindow):
         self.threadpool = QThreadPool()
         self.model = Model()
         self.threadpool.start(self.model)
-        self.model.signals.finished.connect(self.intro_window.after_model_load)
+        self.model.signals.finished.connect(lambda: self.intro_window.after_model_load(self.model.trained_model))
         self.image_editor_window = None
 
         self.image_load_button.clicked.connect(self.load_user_image)
